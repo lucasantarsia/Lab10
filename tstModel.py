@@ -1,14 +1,11 @@
+import networkx as nx
+
 from model.model import Model
 
 myModel = Model()
 
-myModel.creaGrafo(2000)
+myModel.creaGrafo(1980)
 
-# print(len(myModel._grafo.nodes))
-# print(len(myModel._grafo.edges))
+raggiungibili = myModel.getRaggiungibili(myModel._countries[0])
 
-for v in myModel._grafo.nodes:
-    print(f"{v} -- {len(list(myModel._grafo.neighbors(v)))}")
-
-# for u, v in myModel._grafo.edges:
-#     print(f"{u} --- {v}")
+print(raggiungibili)

@@ -10,4 +10,4 @@ class Country:
         return hash(self.CCode)
 
     def __str__(self):
-        return f"{self.CCode} - {self.StateAbb} - {self.StateNme}"
+        return f"{self.StateNme} ({self.StateAbb})"

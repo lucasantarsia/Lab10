@@ -1,4 +1,4 @@
-from connessione import Connessione
+from model.connessione import Connessione
 from database.DB_connect import DBConnect
 from model.country import Country
 
@@ -8,16 +8,19 @@ class DAO():
         pass
 
     @staticmethod
-    def getAllCountries():
+    def getAllCountries(year):
         conn = DBConnect.get_connection()
 
         result = []
 
         cursor = conn.cursor(dictionary=True)
-        query = """select *
-                from country c
+        query = """select c.StateAbb , c.CCode , c.StateNme 
+                from country c , contiguity co
+                where c.CCode = co.state1no 
+                and co.`year` <= %s 
+                group by c.CCode 
                 order by c.StateAbb"""
-        cursor.execute(query, ())
+        cursor.execute(query, (year,))
 
         for row in cursor:
             result.append(Country(**row))
@@ -27,21 +30,21 @@ class DAO():
         return result
 
     @staticmethod
-    def getAllConnessioni(idMap, anno):
+    def getConnessioni(idMap, year):
         conn = DBConnect.get_connection()
 
         result = []
 
         cursor = conn.cursor(dictionary=True)
-        query = """select c.state1no as s1, c.state2no as s2
-                from contiguity c 
-                where c.conttype = 1 
-                and c.`year` <= %s 
-                and c.state1no < c.state2no"""
-        cursor.execute(query, (anno,))
+        query = """select co.state1no , co.state2no 
+                from contiguity co 
+                where co.`year` <= %s
+                and co.conttype = 1
+                and co.state1no < co.state2no"""
+        cursor.execute(query, (year,))
 
         for row in cursor:
-            result.append(Connessione(idMap[row["s1"]], idMap[row["s2"]]))
+            result.append(Connessione(idMap[row["state1no"]], idMap[row["state2no"]]))
 
         cursor.close()
         conn.close()
